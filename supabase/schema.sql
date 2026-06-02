@@ -8,10 +8,19 @@ create table if not exists products (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   price numeric not null default 0,
+  -- Optional discount percentage. The stored `price` is the FINAL price the
+  -- customer pays; the public page shows an inflated, struck-through original
+  -- of price * (1 + discount_percent/100) next to it. e.g. price 100 + 50% =>
+  -- "150" struck, "100" final, "50% OFF" badge.
+  discount_percent numeric not null default 0,
   description text,
   extra_notes text,
   created_at timestamptz not null default now()
 );
+
+-- Safe to re-run on an existing database to add the discount column.
+alter table products
+  add column if not exists discount_percent numeric not null default 0;
 
 -- PRODUCT IMAGES
 create table if not exists product_images (
@@ -32,14 +41,26 @@ create table if not exists feedback (
   created_at timestamptz not null default now()
 );
 
+-- PRODUCT VIEWS (analytics)
+-- One row per page view of a product's public page. Visitors (anonymous) insert
+-- rows; only the authenticated owner can read them (for the dashboard charts).
+create table if not exists product_views (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references products(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
 -- Helpful indexes for the public page / dashboard ordering
 create index if not exists product_images_product_id_idx on product_images (product_id, sort_order);
 create index if not exists feedback_product_id_idx on feedback (product_id, created_at desc);
+create index if not exists product_views_product_id_idx on product_views (product_id, created_at desc);
+create index if not exists product_views_created_at_idx on product_views (created_at desc);
 
 -- Enable Row Level Security
 alter table products enable row level security;
 alter table product_images enable row level security;
 alter table feedback enable row level security;
+alter table product_views enable row level security;
 
 -- PUBLIC READ for products and images (so the public page works)
 create policy "public read products" on products
@@ -52,6 +73,13 @@ create policy "public insert feedback" on feedback
   for insert with check (true);
 create policy "public read feedback" on feedback
   for select using (true);
+
+-- PUBLIC INSERT for product views (visitors record a view without login).
+-- No public read: view counts/analytics are owner-only.
+create policy "public insert product_views" on product_views
+  for insert with check (true);
+create policy "owner read product_views" on product_views
+  for select using (auth.role() = 'authenticated');
 
 -- OWNER (any authenticated user) can do everything on products/images.
 -- Because there is exactly one auth user, "authenticated" == the owner.

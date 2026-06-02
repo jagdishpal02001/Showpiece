@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase, PRODUCT_IMAGES_BUCKET } from '../lib/supabase'
+import { discountInfo, formatPrice } from '../lib/format'
+import { useSeo } from '../lib/seo'
 import ImageUploader from '../components/ImageUploader'
 import QRCard from '../components/QRCard'
 import Spinner from '../components/Spinner'
+import Brand from '../components/Brand'
+import ThemeToggle from '../components/ThemeToggle'
 
 function newUuid() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
@@ -33,6 +37,7 @@ export default function ProductForm() {
 
   const [title, setTitle] = useState('')
   const [price, setPrice] = useState('')
+  const [discountPercent, setDiscountPercent] = useState('')
   const [description, setDescription] = useState('')
   const [extraNotes, setExtraNotes] = useState('')
   const [items, setItems] = useState([])
@@ -64,6 +69,7 @@ export default function ProductForm() {
 
     setTitle(data.title ?? '')
     setPrice(data.price ?? '')
+    setDiscountPercent(data.discount_percent ? String(data.discount_percent) : '')
     setDescription(data.description ?? '')
     setExtraNotes(data.extra_notes ?? '')
 
@@ -88,6 +94,14 @@ export default function ProductForm() {
     [items]
   )
 
+  useSeo({ title: isEdit ? `Edit ${title || 'product'}` : 'New product' })
+
+  // Live preview of how the discount will render on the public page.
+  const pricePreview = useMemo(
+    () => discountInfo(price, discountPercent),
+    [price, discountPercent]
+  )
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -101,6 +115,11 @@ export default function ProductForm() {
       setError('Enter a valid price (0 or more).')
       return
     }
+    const discountNum = discountPercent === '' ? 0 : Number(discountPercent)
+    if (!Number.isFinite(discountNum) || discountNum < 0 || discountNum > 100) {
+      setError('Discount must be between 0 and 100.')
+      return
+    }
     if (uploading) {
       setError('Please wait for images to finish uploading.')
       return
@@ -112,6 +131,7 @@ export default function ProductForm() {
         id: productId,
         title: title.trim(),
         price: priceNum,
+        discount_percent: discountNum,
         description: description.trim() || null,
         extra_notes: extraNotes.trim() || null,
       }
@@ -173,7 +193,7 @@ export default function ProductForm() {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
+      <div className="flex min-h-dvh items-center justify-center bg-slate-50 dark:bg-slate-950">
         <Spinner label="Loading product…" />
       </div>
     )
@@ -181,35 +201,42 @@ export default function ProductForm() {
 
   if (notFound) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center bg-slate-50 px-4 text-center">
-        <h1 className="text-xl font-bold text-slate-800">Product not found</h1>
-        <p className="mt-1 text-sm text-slate-500">It may have been deleted.</p>
-        <Link to="/dashboard" className="mt-5 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
+      <div className="flex min-h-dvh flex-col items-center justify-center bg-slate-50 px-4 text-center dark:bg-slate-950">
+        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Product not found</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">It may have been deleted.</p>
+        <Link to="/dashboard" className="mt-5 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-500">
           Back to dashboard
         </Link>
       </div>
     )
   }
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500'
+  const labelClass = 'mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300'
+  const cardClass = 'space-y-4 rounded-2xl surface p-5 animate-fade-up'
+
   return (
-    <div className="min-h-dvh bg-slate-50">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900">
+    <div className="min-h-dvh bg-slate-50 dark:bg-slate-950">
+      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-400">
             <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.79 5.23a.75.75 0 010 1.06L9.06 10l3.73 3.71a.75.75 0 11-1.06 1.06l-4.25-4.24a.75.75 0 010-1.06l4.25-4.24a.75.75 0 011.06 0z" clipRule="evenodd"/></svg>
             Dashboard
           </Link>
-          <h1 className="text-lg font-bold text-slate-900">{isEdit ? 'Edit product' : 'New product'}</h1>
-          <span className="w-20" />
+          <h1 className="text-base font-bold text-slate-900 dark:text-slate-100 sm:text-lg">{isEdit ? 'Edit product' : 'New product'}</h1>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className={cardClass}>
             <div>
-              <label htmlFor="title" className="mb-1 block text-sm font-medium text-slate-700">
-                Title <span className="text-red-500">*</span>
+              <label htmlFor="title" className={labelClass}>
+                Title <span className="text-rose-500">*</span>
               </label>
               <input
                 id="title"
@@ -218,30 +245,67 @@ export default function ProductForm() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Classic Aviator Sunglasses"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                className={inputClass}
               />
             </div>
 
-            <div>
-              <label htmlFor="price" className="mb-1 block text-sm font-medium text-slate-700">
-                Price <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="price"
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="0.01"
-                required
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="0"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="price" className={labelClass}>
+                  Price <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  required
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0"
+                  className={inputClass}
+                />
+                <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">The final price the customer pays.</p>
+              </div>
+
+              <div>
+                <label htmlFor="discount" className={labelClass}>
+                  Discount % <span className="font-normal text-slate-400">(optional)</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="discount"
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={discountPercent}
+                    onChange={(e) => setDiscountPercent(e.target.value)}
+                    placeholder="0"
+                    className={`${inputClass} pr-8`}
+                  />
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">%</span>
+                </div>
+                <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Shows a struck-through higher price.</p>
+              </div>
             </div>
 
+            {/* Live discount preview */}
+            {pricePreview.hasDiscount && (
+              <div className="flex flex-wrap items-center gap-3 rounded-xl bg-brand-50 px-4 py-3 dark:bg-brand-950/40 animate-scale-in">
+                <span className="text-xs font-semibold uppercase tracking-wide text-brand-500 dark:text-brand-300">Preview</span>
+                <span className="text-sm text-slate-400 line-through dark:text-slate-500">{formatPrice(pricePreview.original)}</span>
+                <span className="text-lg font-bold text-slate-900 dark:text-white">{formatPrice(pricePreview.final)}</span>
+                <span className="rounded-full bg-gradient-to-r from-rose-500 to-orange-500 px-2 py-0.5 text-xs font-bold text-white">
+                  {pricePreview.percent}% OFF
+                </span>
+              </div>
+            )}
+
             <div>
-              <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="description" className={labelClass}>
                 Description
               </label>
               <textarea
@@ -250,12 +314,12 @@ export default function ProductForm() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the product, materials, sizing…"
-                className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                className={`${inputClass} resize-y`}
               />
             </div>
 
             <div>
-              <label htmlFor="notes" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="notes" className={labelClass}>
                 Extra notes
               </label>
               <textarea
@@ -264,15 +328,15 @@ export default function ProductForm() {
                 value={extraNotes}
                 onChange={(e) => setExtraNotes(e.target.value)}
                 placeholder="Care instructions, availability, anything else…"
-                className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                className={`${inputClass} resize-y`}
               />
             </div>
           </div>
 
           {/* Images */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-1 text-sm font-semibold text-slate-800">Images</h2>
-            <p className="mb-4 text-xs text-slate-500">
+          <div className="rounded-2xl surface p-5 animate-fade-up" style={{ animationDelay: '60ms' }}>
+            <h2 className="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-200">Images</h2>
+            <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
               The first image is used as the cover. Reorder with the arrows on each tile.
             </p>
             <ImageUploader
@@ -284,21 +348,21 @@ export default function ProductForm() {
           </div>
 
           {/* QR preview (handy while editing) */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-1 text-sm font-semibold text-slate-800">Public page QR</h2>
-            <p className="mb-4 text-xs text-slate-500">
-              Points at <span className="font-mono">{`/p/${productId}`}</span>. Works once you save.
+          <div className="rounded-2xl surface p-5 animate-fade-up" style={{ animationDelay: '120ms' }}>
+            <h2 className="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-200">Public page QR</h2>
+            <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
+              Points at <span className="font-mono text-brand-600 dark:text-brand-400">{`/p/${productId}`}</span>. Works once you save.
             </p>
             <QRCard productId={productId} title={title || 'product'} size={140} compact />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700" role="alert">
+            <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 animate-slide-down" role="alert">
               {error}
             </p>
           )}
           {hasFailed && !error && (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+            <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
               Some images failed to upload. Retry or remove them before saving.
             </p>
           )}
@@ -306,14 +370,14 @@ export default function ProductForm() {
           <div className="flex items-center justify-end gap-3">
             <Link
               to="/dashboard"
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={saving || uploading}
-              className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
+              className="rounded-xl bg-gradient-to-r from-brand-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:shadow-brand-600/40 hover:brightness-110 active:scale-95 disabled:opacity-60"
             >
               {saving ? 'Saving…' : uploading ? 'Uploading images…' : isEdit ? 'Save changes' : 'Create product'}
             </button>

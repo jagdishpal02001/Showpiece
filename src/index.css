@@ -7,12 +7,16 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
   /* Respect device safe areas (notches) on the public page. */
   #root {
     min-height: 100dvh;
+  }
+  /* Smooth scrolling + nicer focus rings app-wide. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500/70 ring-offset-1 ring-offset-white dark:ring-offset-slate-950;
   }
 }
 
@@ -30,5 +34,26 @@
   }
   .snap-center {
     scroll-snap-align: center;
+  }
+  /* Animated brand gradient text. */
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-brand-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+  /* Reusable elevated card surface that adapts to the theme. */
+  .surface {
+    @apply border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  }
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

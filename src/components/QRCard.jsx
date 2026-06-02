@@ -86,7 +86,7 @@ export default function QRCard({ productId, title = 'product', size = 128, compa
 
   return (
     <div className={compact ? 'flex items-center gap-3' : 'flex flex-col items-center gap-3'}>
-      <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm ring-1 ring-black/5">
         <canvas
           ref={canvasRef}
           style={{ width: size, height: size }}
@@ -99,14 +99,14 @@ export default function QRCard({ productId, title = 'product', size = 128, compa
         <button
           type="button"
           onClick={downloadPng}
-          className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-700"
+          className="rounded-lg bg-gradient-to-r from-brand-600 to-violet-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-95"
         >
           PNG
         </button>
         <button
           type="button"
           onClick={downloadSvg}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
         >
           SVG
         </button>
@@ -114,7 +114,7 @@ export default function QRCard({ productId, title = 'product', size = 128, compa
           <button
             type="button"
             onClick={share}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             Share
           </button>
@@ -122,7 +122,7 @@ export default function QRCard({ productId, title = 'product', size = 128, compa
           <button
             type="button"
             onClick={copyLink}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             {copied ? 'Copied!' : 'Copy link'}
           </button>

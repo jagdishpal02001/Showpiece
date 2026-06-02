@@ -40,7 +40,7 @@ export default function Gallery({ images = [], title = '' }) {
 
   if (count === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
         <span className="text-sm">No image</span>
       </div>
     )
@@ -54,7 +54,7 @@ export default function Gallery({ images = [], title = '' }) {
           ref={trackRef}
           onScroll={onScroll}
           tabIndex={0}
-          className="no-scrollbar snap-x-mandatory flex aspect-square w-full overflow-x-auto rounded-2xl bg-slate-100 focus:outline-none"
+          className="no-scrollbar snap-x-mandatory flex aspect-square w-full overflow-x-auto rounded-2xl bg-slate-100 focus:outline-none dark:bg-slate-800"
           aria-roledescription="carousel"
         >
           {images.map((img, i) => (
@@ -81,7 +81,7 @@ export default function Gallery({ images = [], title = '' }) {
               type="button"
               onClick={() => scrollTo(active - 1)}
               disabled={active === 0}
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-md backdrop-blur transition hover:bg-white disabled:opacity-0"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-md backdrop-blur transition hover:scale-110 hover:bg-white disabled:opacity-0 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900"
               aria-label="Previous image"
             >
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -92,7 +92,7 @@ export default function Gallery({ images = [], title = '' }) {
               type="button"
               onClick={() => scrollTo(active + 1)}
               disabled={active === count - 1}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-md backdrop-blur transition hover:bg-white disabled:opacity-0"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-md backdrop-blur transition hover:scale-110 hover:bg-white disabled:opacity-0 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900"
               aria-label="Next image"
             >
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -106,7 +106,7 @@ export default function Gallery({ images = [], title = '' }) {
                 <span
                   key={img.id || i}
                   className={`h-1.5 rounded-full transition-all ${
-                    i === active ? 'w-5 bg-slate-900' : 'w-1.5 bg-white/80'
+                    i === active ? 'w-5 bg-brand-500' : 'w-1.5 bg-white/80 dark:bg-white/50'
                   }`}
                 />
               ))}
@@ -124,7 +124,7 @@ export default function Gallery({ images = [], title = '' }) {
               type="button"
               onClick={() => scrollTo(i)}
               className={`relative h-16 w-16 flex-none overflow-hidden rounded-lg border-2 transition ${
-                i === active ? 'border-slate-900' : 'border-transparent opacity-70 hover:opacity-100'
+                i === active ? 'border-brand-500' : 'border-transparent opacity-70 hover:opacity-100'
               }`}
               aria-label={`Go to image ${i + 1}`}
               aria-current={i === active}

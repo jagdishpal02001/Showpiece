@@ -1,9 +1,9 @@
 // Small accessible spinner used across loading states.
 export default function Spinner({ label = 'Loading…', className = '' }) {
   return (
-    <div className={`flex items-center gap-2 text-slate-500 ${className}`} role="status">
+    <div className={`flex items-center gap-2 text-slate-500 dark:text-slate-400 ${className}`} role="status">
       <svg
-        className="h-5 w-5 animate-spin text-slate-400"
+        className="h-5 w-5 animate-spin text-brand-500"
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"

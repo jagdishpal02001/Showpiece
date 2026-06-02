@@ -4,14 +4,55 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#020617" />
+
+    <!-- Primary SEO -->
+    <title>Nefits — Beautiful product pages & QR codes</title>
+    <meta
+      name="description"
+      content="Nefits turns any product into a beautiful shareable page with photos, pricing, discounts, customer feedback and a scannable QR code."
+    />
+    <meta name="application-name" content="Nefits" />
+    <meta name="author" content="Nefits" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Nefits" />
+    <meta property="og:title" content="Nefits — Beautiful product pages & QR codes" />
+    <meta
+      property="og:description"
+      content="Showcase your products with photos, pricing, discounts and a scannable QR code — powered by Nefits."
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nefits — Beautiful product pages & QR codes" />
+    <meta
+      name="twitter:description"
+      content="Showcase your products with photos, pricing, discounts and a scannable QR code — powered by Nefits."
+    />
+
+    <!-- Set the theme class before paint to avoid a light/dark flash. Default: dark. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('nefits-theme');
+          var dark = t !== 'light';
+          if (dark) document.documentElement.classList.add('dark');
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <title>Product Showcase</title>
   </head>
   <body>
     <div id="root"></div>

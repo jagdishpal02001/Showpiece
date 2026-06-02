@@ -146,14 +146,14 @@ export default function ImageUploader({ productId, items, setItems, disabled = f
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={disabled}
-          className="inline-flex items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-600 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-brand-500 dark:hover:bg-slate-700 dark:hover:text-brand-300"
         >
           <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
           </svg>
           Add images
         </button>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-slate-500 dark:text-slate-400">
           {items.length} image{items.length === 1 ? '' : 's'} · drag order with the arrows
         </span>
       </div>
@@ -176,7 +176,7 @@ export default function ImageUploader({ productId, items, setItems, disabled = f
             return (
               <li
                 key={key}
-                className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100"
+                className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800"
               >
                 <img
                   src={srcFor(item)}
