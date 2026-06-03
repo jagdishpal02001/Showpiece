@@ -18,7 +18,7 @@ const QR_OPTIONS = {
 // Share (Web Share API) / Copy-link action. `size` is the on-screen px size.
 export default function QRCard({ productId, title = 'product', size = 128, compact = false }) {
   const canvasRef = useRef(null)
-  const url = publicUrlFor(productId)
+  const url = productId === 'store' ? `${window.location.origin}/products` : publicUrlFor(productId)
   const [copied, setCopied] = useState(false)
   const [canShare, setCanShare] = useState(false)
 
@@ -39,7 +39,10 @@ export default function QRCard({ productId, title = 'product', size = 128, compa
     }
   }, [url])
 
-  const safeName = (title || 'product').replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'product'
+  const safeName = (title || (productId === 'store' ? 'all-products-catalog' : 'product'))
+    .replace(/[^a-z0-9]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase() || 'product'
 
   function triggerDownload(href, filename) {
     const a = document.createElement('a')

@@ -163,7 +163,9 @@ export default function PublicProduct() {
       {/* Brand header */}
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Brand size="md" />
+          <Link to="/products" className="focus-visible:ring-offset-2">
+            <Brand size="md" />
+          </Link>
           <ThemeToggle />
         </div>
       </header>
@@ -177,6 +179,15 @@ export default function PublicProduct() {
 
           {/* Details */}
           <div className="animate-fade-up" style={{ animationDelay: '80ms' }}>
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition mb-4 group"
+            >
+              <svg className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              All Products Catalog
+            </Link>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
               {product.title}
             </h1>

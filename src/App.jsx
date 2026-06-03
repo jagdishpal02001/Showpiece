@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import ProductForm from './pages/ProductForm'
 import PublicProduct from './pages/PublicProduct'
+import PublicProducts from './pages/PublicProducts'
 import NotFound from './pages/NotFound'
 
 // "/" sends the owner to the dashboard when logged in, otherwise to /login.
@@ -54,6 +55,8 @@ export default function App() {
         />
 
         {/* Public, no auth */}
+        <Route path="/products" element={<PublicProducts />} />
+        <Route path="/p" element={<Navigate to="/products" replace />} />
         <Route path="/p/:id" element={<PublicProduct />} />
 
         <Route path="*" element={<NotFound />} />
